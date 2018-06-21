@@ -2,7 +2,6 @@ import os
 
 DB_DIR = r'C:\Users\arush\Desktop\upload'
 
-
 def print_header():
     print '-'*50
     print "       WELCOME TO INDIAN RAILWAYS"
@@ -93,7 +92,6 @@ def main():
     else:
         print '\n'
         print "Please select valid choice"
-
 
 while True:
     print '\n' * 2
