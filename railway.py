@@ -1,6 +1,10 @@
 import os
 
 DB_DIR = r'C:\Users\arush\Desktop\upload'
+RAIL_DB = {}
+VALID_COACHES = ['ac1','ac2','ac3','sl']
+VALID_SEAT_PREF = ['L','M','U','N']
+PNR = 1
 
 def print_header():
     print '-'*50
@@ -74,6 +78,65 @@ def verify_password(user_name,password):
     else:
         return False
 
+def init_db(total_seats=42):
+     ac3 = {'L':range(1,total_seats,3),
+            'M':range(2,total_seats,3),
+            'U':range(3,total_seats,3)}
+
+     ac2 = {'L':range(1,total_seats,2),
+            'U':range(2,total_seats,3)}
+
+     ac1 = {'L' : range(1,total_seats)}
+
+     sl = {'L':range(1,total_seats,3),
+           'M':range(2,total_seats,3),
+           'U':range(3,total_seats,3)}
+
+     RAIL_DB.update({'ac1':ac1,'ac2':ac2,'ac3':ac3,'sl':sl})
+
+def get_vacant_seat(coach,r_nos,seat_pref='U'):
+    if len(RAIL_DB[coach][seat_pref]) >= r_nos:
+        return RAIL_DB[coach][seat_pref][:r_nos]
+    else:
+        return False
+
+def reserve_in_db(coach,seat_pref,seats):
+    for seat in seats:
+        RAIL_DB[coach][seat_pref].remove(seat)
+
+def print_tkt(source,dest,coach,seat_no):
+    print '*'*50
+    print "PNR    :   0000" + str(PNR)
+    print "SOURCE : %s                 DESTINATION : %s" %(source,dest)
+    print "COACH : %s" %coach
+    print "SEAT NO : %s" %seat_no
+    print '*' * 50
+
+def ticket_booking_screen():
+    print_header()
+    source = raw_input("Enter Source Location : ")
+    dest = raw_input("Enter Destination Location : ")
+    while True:
+        coach = raw_input("Enter the choice of coach(ac1/ac2/ac3/sl): ")
+        if coach not in VALID_COACHES:
+            print "Please Enter Valid Coach only. \n"
+        else:
+            break
+    no_of_tkt = int(raw_input("Enter number of tickets to book : "))
+    while True:
+        seat_pref = raw_input("Enter if any seat preference L/M/U/N(no preference) : ")
+        if seat_pref not in VALID_SEAT_PREF:
+            print "Please ENTER valid seat preference only"
+        else:
+            break
+    if seat_pref != 'N':
+        seats = get_vacant_seat(coach,no_of_tkt,seat_pref)
+        if not seats :
+            print "%s birth not available" %seat_pref
+        else:
+            reserve_in_db(coach, seat_pref, seats)
+            print_tkt(source, dest, coach, seats)
+
 def main():
     print_header()
     choice = first_screen()
@@ -85,6 +148,7 @@ def main():
         if verify_password(user_name,password):
             print '\n'
             print "Login Successful"
+            ticket_booking_screen()
         else:
             print '\n'
             print "USer or Password not valid"
@@ -93,6 +157,8 @@ def main():
         print '\n'
         print "Please select valid choice"
 
+
+init_db(42)
 while True:
     print '\n' * 2
     main()
